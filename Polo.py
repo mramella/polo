@@ -3,9 +3,16 @@ def lambda_handler(event, context):
 
     poloBalance = p.returnBalance()
 
+    dynamodb_client = boto3.client('dynamodb')
+
+    item = {'datetime': {'S': str(datetime.datetime.now())}, 'balance': {'S': poloBalance}}
+
+    dynamodb_client.put_item(TableName='polo', Item=item)
+
     return json.loads(
         '{"version":"1.0","response":{"outputSpeech":{"type":"PlainText","text":"Your polo balance is ' + str(
             poloBalance) + ' USD. Nice! "},"shouldEndSession":true}}')
+
 
 import urllib
 import json
@@ -13,6 +20,9 @@ import hmac
 import hashlib
 import time
 import os
+import boto3
+import datetime
+
 
 class poloniex:
     def __init__(self, APIKey, Secret):
