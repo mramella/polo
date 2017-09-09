@@ -7,15 +7,12 @@ def lambda_handler(event, context):
         '{"version":"1.0","response":{"outputSpeech":{"type":"PlainText","text":"Your polo balance is ' + str(
             poloBalance) + ' USD. Nice! "},"shouldEndSession":true}}')
 
-
 import urllib
-import urllib2
 import json
 import hmac
 import hashlib
 import time
 import os
-
 
 class poloniex:
     def __init__(self, APIKey, Secret):
@@ -27,22 +24,23 @@ class poloniex:
         req['command'] = command
         req['nonce'] = int(time.time() * 1000)
 
-        post_data = urllib.urlencode(req)
+        post_data = urllib.parse.urlencode(req)
+        post_data = post_data.encode('utf-8')  # data should be bytes
 
-        sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
+        sign = hmac.new(bytes(self.Secret, 'latin-1'), post_data, hashlib.sha512).hexdigest()
 
         headers = {
             'Sign': sign,
             'Key': self.APIKey
         }
 
-        ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/tradingApi', post_data, headers))
+        ret = urllib.request.urlopen(urllib.request.Request('https://poloniex.com/tradingApi', post_data, headers))
 
         return json.loads(ret.read())
 
     def get_bitcoin_price_polo(self):
 
-        ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=returnTicker'))
+        ret = urllib.request.urlopen(urllib.request.Request('https://poloniex.com/public?command=returnTicker'))
 
         payload = json.loads(ret.read())
 
