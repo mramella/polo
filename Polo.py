@@ -64,7 +64,7 @@ class poloniex:
         for coin in balances:
             balancePerCoin = balances[coin]
             if coin == 'USDT':
-                totalUsdtBalance = float(balancePerCoin['available'])
+                totalUsdtBalance = float(balancePerCoin['available']) + float(balancePerCoin['onOrders'])
             else:
                 btcValue = float(balancePerCoin['btcValue'])
                 if btcValue > 0:
